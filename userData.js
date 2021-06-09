@@ -7,4 +7,4 @@ const userDataSchema = mongoose.Schema({
   level: Number,
 });
 
-module.exports = mongoose.model("userData", userDataSchema);
+module.exports = mongoose.model("userdatas", userDataSchema);

@@ -7,6 +7,44 @@ const mongoose = require("mongoose");
 const UserData = require("./userData.js");
 const keepAlive = require("./server.js");
 
+const econCommands = [
+  {
+    code: "`lp!leaderboard`",
+    desc: "Get the leaderboard",
+  },
+  {
+    code: "`lp!userinfo`",
+    desc: "Get the info about an user",
+  },
+  {
+    code: "`lp!sell @user amount`",
+    desc: "Sell your xp to another user",
+  },
+  {
+    code: "`$e-help`",
+    desc: "Get help",
+  },
+];
+
+const sendHelp = (msg, chId) => {
+  var title;
+  var res;
+  if (chId === process.env.BOTCHATCHID) {
+    title = "Xp Commads";
+    res = econCommands
+      .map(({ code, desc }) => `${code}\n ${desc}   `)
+      .join("\n\n");
+  }
+
+  const embed = new Discord.MessageEmbed()
+    .setColor("#1ab27c")
+    .setTitle(`__${title}__`)
+    .setDescription(res)
+    .setTimestamp();
+
+  msg.reply(embed);
+};
+
 client.on("ready", () => {
   console.log("Ready");
   client.user.setPresence({
@@ -135,6 +173,11 @@ client.on("message", (msg) => {
       }
     );
   }
+
+  if (msg.content === "$e-help") {
+    sendHelp(msg, msg.channel.id);
+  }
+
   if (msg.channel.id === process.env.BOTCHATCHID) {
     if (!msg.content.startsWith("lp!")) return;
 
@@ -243,38 +286,8 @@ client.on("message", (msg) => {
           }
         });
       }
-    } else if (msgContent.substring(0, 4) === "help") {
-      sendHelp(msg, "Help", true);
-    } else if (msgContent.indexOf("fuck") > -1) {
-      sendEmbed(msg, `<@!${msg.author.id}>, Fuck YOURSELF`, "You Asked");
     }
   }
-});
-
-client.on("messageDelete", (msg) => {
-  if (msg.channel.id !== process.env.MAINCHID) return;
-  if (msg.author.id === client.user.id) return;
-  if (msg.channel.type === "dm") return;
-
-  UserData.findOne(
-    {
-      userId: msg.author.id,
-    },
-    (err, userData) => {
-      if (!err && userData) {
-        UserData.updateOne(
-          {
-            userId: msg.author.id,
-          },
-          {
-            $set: {
-              xp: userData.xp - 2,
-            },
-          }
-        ).exec();
-      }
-    }
-  );
 });
 
 client.on("messageReactionAdd", async (reaction, user) => {

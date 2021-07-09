@@ -179,6 +179,25 @@ client.on("message", (msg) => {
   }
 
   if (msg.channel.id === process.env.BOTCHATCHID) {
+    if(msg.content.startsWith("rl!")) {
+      const roles = [
+        "862990637942571019"
+      ];
+      const role = msg.mentions.roles.first();
+      const msgContent = msg.content.toLocaleLowerCase();
+      if(msgContent.substring(3, 6) === "add") {
+       if(roles.includes(role.id)) {
+        msg.member.roles.add(role.id);
+        msg.reply(`The <@&${role.id}> role has been added!`);
+       }
+      }
+      else if(msgContent.substring(3, 9) === "remove") {
+        if(roles.includes(role.id)) {
+          msg.member.roles.remove(role.id);
+          msg.reply(`The <@&${role.id}> role has been removed!`);
+        }
+      }
+    }
     if (!msg.content.startsWith("lp!")) return;
 
     var msgContent = msg.content.substring(3).toLocaleLowerCase();
